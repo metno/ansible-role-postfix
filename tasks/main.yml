@@ -52,7 +52,7 @@
     pattern: postfix
     enabled: true
 
-- name: reload postfix
+- name: restart postfix
   service:
     name: postfix
     state: restarted
