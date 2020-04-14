@@ -1,0 +1,72 @@
+---
+- name: check if we're running supported os
+  assert:
+    fail_msg: "{{ role_name }} only supports ubuntu versions 12, 14, 16, 18 and centos versions 6, 7!"
+    success_msg: "{{ role_name }} supports {{ ansible_distribution }} version {{ ansible_distribution_version }}"
+    quiet: "{{ not ansible_check_mode }}"
+    that:
+      ( ansible_distribution == "Ubuntu" and ansible_distribution_version|int in [12, 14, 16, 18] )
+      or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [6, 7, 8] )
+
+- name: install dependencies centos 6 and 7
+  yum:
+    name:
+      - libselinux-python
+      - yum-utils
+  when:
+    - ansible_distribution_major_version|int in [6, 7]
+    - ansible_distribution == "CentOS"
+  check_mode: false
+
+- name: install dependencies centos 8
+  dnf:
+    name:
+      - python3-libselinux
+      - dnf-utils
+  when:
+    - ansible_distribution_major_version|int == 8
+    - ansible_distribution == "CentOS"
+  check_mode: false
+
+- name: combine custom and global config
+  set_fact:
+    postfix_main_cf: '{{ postfix_default_main_cf | combine(postfix_main_cf, recursive=True) }}'
+
+- name: install postfix
+  package:
+    name: postfix
+
+- name: update postfix configuration
+  ini_file:
+    path: /etc/postfix/main.cf
+    section: null
+    option: '{{ item.option }}'
+    value: '{{ item.value | string }}'
+  loop: '{{ postfix_main_cf | dict2items(key_name="option", value_name="value") }}'
+  register: postfix_config
+
+- name: start and enable postfix
+  service:
+    name: postfix
+    state: started
+    pattern: postfix
+    enabled: true
+
+- name: reload postfix
+  service:
+    name: postfix
+    state: restarted
+  when: postfix_config is changed
+
+- name: update mail aliases
+  lineinfile:
+    path: /etc/aliases
+    regex: '^{{ item.user }}\:.*$'
+    line: '{{ item.user }}: {{ item.alias }}'
+    state: '{{ "present" if item.alias | default("") | length > 0 else "absent" }}'
+  loop: '{{ postfix_aliases | dict2items(key_name="user", value_name="alias") }}'
+  register: mail_aliases
+
+- name: update new aliases
+  command: /usr/bin/newaliases
+  when: mail_aliases is changed

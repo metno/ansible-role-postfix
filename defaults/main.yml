@@ -1,0 +1,22 @@
+---
+postfix_aliases:
+  root: ''
+
+postfix_main_cf: {}
+
+postfix_default_main_cf:
+  append_dot_mydomain: no
+  biff: no
+  inet_interfaces: 127.0.0.1, [::1]
+  mydestination: ${myhostname} localhost.${mydomain} localhost ${mydomain}
+  mydomain: '{{ ansible_domain }}'
+  myhostname: '{{ ansible_fqdn }}'
+  mynetworks_style: host
+  myorigin: ${myhostname}
+  relaydomain: ${mydomain}
+  relayhost: aspmx.l.google.com
+  smtp_enforce_tls: 'yes'
+  smtp_sasl_auth_enable: 'no'
+  smtp_tls_session_cache_database: btree:${data_directory}/smtp_scache
+  tls_append_default_CA: 'yes'
+
