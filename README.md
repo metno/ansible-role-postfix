@@ -1,15 +1,15 @@
 postfix
 =======
 
-Configure Postfix to send mail via a relay client.
+Configure `postfix` to send mail via a relay client.
 
-Default postfix configuration in `/etc/postfix/main.cf` as below. Override values in `postfix_main_cf`.
+Installs both `postfix` and `bsd-mailx`/`mailx` packages. Default postfix configuration in `/etc/postfix/main.cf` as below. Override values in `postfix_main_cf`.
 
 ```ini
 append_dot_mydomain = no
 biff = no
 inet_interfaces = 127.0.0.1, [::1]
-mydestination = ${myhostname} localhost.${mydomain} localhost ${mydomain}
+mydestination = ${myhostname} localhost.${mydomain} localhost
 mydomain = '{{ ansible_domain }}'
 myhostname = '{{ ansible_fqdn }}'
 mynetworks_style = host
@@ -44,8 +44,9 @@ This role is limited to:
 Role Variables
 --------------
 
-* `postfix_aliases` --- configure mail aliases in a dictionary - empty string removes alias, default `{ root: '' }`
-* `postfix_main_cf` --- configuration values for `/etc/postfix/main.cf` as dictionary, default `{}`
+* `postfix_aliases` --- configure mail aliases in a dictionary - empty string removes alias, default `{ root: '' }`.
+* `postfix_main_cf` --- configuration values for `/etc/postfix/main.cf` as dictionary, default `{}`.
+* `postfix_automatic_smt_tls_cafile` --- add reference to OS ca-certificates/ca-bundle file in postfix configuration, default `true`.
 
 Dependencies
 ------------
