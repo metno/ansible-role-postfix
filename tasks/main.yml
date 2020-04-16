@@ -72,7 +72,7 @@
 - name: update mail aliases
   lineinfile:
     path: /etc/aliases
-    regex: '^{{ item.user }}\:.*$'
+    regex: '^{{ item.user }}:.*$'
     line: '{{ item.user }}: {{ item.alias }}'
     state: '{{ "present" if item.alias | default("") | length > 0 else "absent" }}'
   loop: '{{ postfix_aliases | dict2items(key_name="user", value_name="alias") }}'
