@@ -69,6 +69,11 @@
     state: restarted
   when: postfix_config is changed
 
+- name: check if alias file exits
+  stat:
+    path: /etc/aliases
+  register: alias_file
+
 - name: update mail aliases
   lineinfile:
     path: /etc/aliases
@@ -77,7 +82,10 @@
     state: '{{ "present" if item.alias | default("") | length > 0 else "absent" }}'
   loop: '{{ postfix_aliases | dict2items(key_name="user", value_name="alias") }}'
   register: mail_aliases
+  when: alias_file.stat.exists
 
 - name: update new aliases
   command: /usr/bin/newaliases
-  when: mail_aliases is changed
+  when:
+    - mail_aliases is defined
+    - mail_aliases is changed
