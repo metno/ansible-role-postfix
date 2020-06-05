@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `1.0.2` --- check if alias file exits before adding alias
 * `1.0.1` --- fixed replace of existing alias
 * `1.0.0` --- initial version
 * `master` --- latest development version
