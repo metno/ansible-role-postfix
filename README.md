@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `1.1.0` --- updated with ubuntu focal, 20.04
 * `1.0.4` --- tested with Ansible 2.9.11
 * `1.0.3` --- prepare for github
 * `1.0.2` --- check if alias file exits before adding alias
