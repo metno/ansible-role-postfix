@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `1.2.0` --- remove ubuntu precise from testing
 * `1.1.0` --- updated with ubuntu focal, 20.04
 * `1.0.4` --- tested with Ansible 2.9.11
 * `1.0.3` --- prepare for github
@@ -38,7 +39,6 @@ Requirements
 
 This role is limited to:
 
-* Ubuntu 12.04
 * Ubuntu 14.04
 * Ubuntu 16.04
 * Ubuntu 18.04
