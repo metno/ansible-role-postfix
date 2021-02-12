@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `2.0.0` --- removed centos6 from test. added update cache for ubuntu. reordered tasks so newaliases are run before postfix start.
 * `1.2.0` --- remove ubuntu precise from testing
 * `1.1.0` --- updated with ubuntu focal, 20.04
 * `1.0.4` --- tested with Ansible 2.9.11

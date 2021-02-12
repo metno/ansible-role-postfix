@@ -1,20 +1,20 @@
 ---
 - name: check if we're running supported os
   assert:
-    fail_msg: "{{ role_name }} only supports ubuntu versions 12, 14, 16, 18, 20 and centos versions 6, 7, 8!"
+    fail_msg: "{{ role_name }} only supports ubuntu versions 12, 14, 16, 18, 20 and centos versions 7, 8!"
     success_msg: "{{ role_name }} supports {{ ansible_distribution }} version {{ ansible_distribution_version }}"
     quiet: "{{ not ansible_check_mode }}"
     that:
       ( ansible_distribution == "Ubuntu" and ansible_distribution_version|int in [12, 14, 16, 18, 20] )
-      or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [6, 7, 8] )
+      or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7, 8] )
 
-- name: install dependencies centos 6 and 7
+- name: install dependencies centos 7
   yum:
     name:
       - libselinux-python
       - yum-utils
   when:
-    - ansible_distribution_major_version|int in [6, 7]
+    - ansible_distribution_major_version|int in [7]
     - ansible_distribution == "CentOS"
   check_mode: false
 
@@ -32,6 +32,13 @@
   set_fact:
     postfix_main_cf: '{{ postfix_default_main_cf | combine(postfix_main_cf, recursive=True) }}'
 
+- name: update apt cache on debian/ubuntu
+  apt:
+    update_cache: true
+    cache_valid_time: 86400
+  when:
+    - ansible_distribution == "Ubuntu"
+
 - name: install postfix
   package:
     name:
@@ -45,6 +52,7 @@
     section: null
     option: '{{ item.option }}'
     value: '{{ item.value | string }}'
+    mode: 0644
   loop: '{{ postfix_main_cf | dict2items(key_name="option", value_name="value") }}'
   register: postfix_config
 
@@ -54,20 +62,8 @@
     section: null
     option: smtp_tls_CAfile
     value: '{{ "/etc/ssl/certs/ca-bundle.crt" if ansible_os_family | lower == "redhat" else "/etc/ssl/certs/ca-certificates.crt" }}'
+    mode: 0644
   when: postfix_automatic_smt_tls_cafile
-
-- name: start and enable postfix
-  service:
-    name: postfix
-    state: started
-    pattern: postfix
-    enabled: true
-
-- name: restart postfix
-  service:
-    name: postfix
-    state: restarted
-  when: postfix_config is changed
 
 - name: check if alias file exits
   stat:
@@ -89,3 +85,16 @@
   when:
     - mail_aliases is defined
     - mail_aliases is changed
+
+- name: start and enable postfix
+  service:
+    name: postfix
+    state: started
+    pattern: postfix
+    enabled: true
+
+- name: restart postfix
+  service:
+    name: postfix
+    state: restarted
+  when: postfix_config is changed
