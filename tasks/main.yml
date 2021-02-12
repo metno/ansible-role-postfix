@@ -52,6 +52,7 @@
     section: null
     option: '{{ item.option }}'
     value: '{{ item.value | string }}'
+    mode: 0644
   loop: '{{ postfix_main_cf | dict2items(key_name="option", value_name="value") }}'
   register: postfix_config
 
@@ -61,6 +62,7 @@
     section: null
     option: smtp_tls_CAfile
     value: '{{ "/etc/ssl/certs/ca-bundle.crt" if ansible_os_family | lower == "redhat" else "/etc/ssl/certs/ca-certificates.crt" }}'
+    mode: 0644
   when: postfix_automatic_smt_tls_cafile
 
 - name: check if alias file exits
