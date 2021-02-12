@@ -32,6 +32,13 @@
   set_fact:
     postfix_main_cf: '{{ postfix_default_main_cf | combine(postfix_main_cf, recursive=True) }}'
 
+- name: update apt cache on debian/ubuntu
+  apt:
+    update_cache: true
+    cache_valid_time: 86400
+  when:
+    - ansible_distribution == "Ubuntu"
+
 - name: install postfix
   package:
     name:
@@ -56,19 +63,6 @@
     value: '{{ "/etc/ssl/certs/ca-bundle.crt" if ansible_os_family | lower == "redhat" else "/etc/ssl/certs/ca-certificates.crt" }}'
   when: postfix_automatic_smt_tls_cafile
 
-- name: start and enable postfix
-  service:
-    name: postfix
-    state: started
-    pattern: postfix
-    enabled: true
-
-- name: restart postfix
-  service:
-    name: postfix
-    state: restarted
-  when: postfix_config is changed
-
 - name: check if alias file exits
   stat:
     path: /etc/aliases
@@ -89,3 +83,16 @@
   when:
     - mail_aliases is defined
     - mail_aliases is changed
+
+- name: start and enable postfix
+  service:
+    name: postfix
+    state: started
+    pattern: postfix
+    enabled: true
+
+- name: restart postfix
+  service:
+    name: postfix
+    state: restarted
+  when: postfix_config is changed
