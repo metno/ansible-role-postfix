@@ -46,7 +46,6 @@ This role is limited to:
 * Ubuntu 20.04
 * CentOS 6
 * CentOS 7
-* CentOS 8
 
 Role Variables
 --------------
