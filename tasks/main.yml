@@ -82,6 +82,7 @@
     section: null
     option: 'inet_interfaces'
     value: "all"
+    mode: 0644
   register: postfix_config
   when:
     - ansible_distribution_major_version|int == 8
