@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `2.1.0` --- removed Ubuntu 14.04 from test. Added RHEL 8 and set inet_interfaces = all for that dist.
 * `2.0.0` --- removed centos6 from test. added update cache for ubuntu. reordered tasks so newaliases are run before postfix start.
 * `1.2.0` --- remove ubuntu precise from testing
 * `1.1.0` --- updated with ubuntu focal, 20.04
@@ -40,7 +41,7 @@ Requirements
 
 This role is limited to:
 
-* Ubuntu 14.04
+* RHEL 8
 * Ubuntu 16.04
 * Ubuntu 18.04
 * Ubuntu 20.04
