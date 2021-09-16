@@ -59,8 +59,6 @@ Dependencies
 ------------
 The RHEL8 image needs to be registered with RedHat to install packages.
 
-None
-
 Example Playbook
 ----------------
 
