@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `2.2.0` --- added Ubuntu Jammy(22.04) and removed centos8.
 * `2.1.0` --- removed Ubuntu 14.04 from test. Added RHEL 8 and set inet_interfaces = all for that dist.
 * `2.0.0` --- removed centos6 from test. added update cache for ubuntu. reordered tasks so newaliases are run before postfix start.
 * `1.2.0` --- remove ubuntu precise from testing
@@ -44,8 +45,8 @@ This role is limited to:
 * Ubuntu 16.04
 * Ubuntu 18.04
 * Ubuntu 20.04
+* Ubuntu 22.04
 * CentOS 7
-* CentOS 8
 * RHEL 8
 
 Role Variables
