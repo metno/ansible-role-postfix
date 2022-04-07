@@ -1,7 +1,11 @@
+# vim: ai et ts=2 st=2 sw=2 :
+---
 galaxy_info:
   author: Arnulf Heimsbakk <aheimsbakk@met.no>
   description: Configure postfix
   company: MET Norway
+  role_name: postfix
+  namespace: met
 
   license: GPLv2
 
