@@ -1,29 +1,28 @@
 # vim: ai et ts=2 st=2 sw=2 :
 ---
 galaxy_info:
-  author: Arnulf Heimsbakk <aheimsbakk@met.no>
-  description: Configure postfix
-  company: MET Norway
-  role_name: postfix
-  namespace: met
+  standalone: true
+  author: "Arnulf Heimsbakk <aheimsbakk@met.no>"
+  description: "Configure postfix"
+  company: "MET Norway"
+  role_name: "postfix"
+  namespace: "met"
 
-  license: GPLv2
+  license: "GPLv2"
 
-  min_ansible_version: 2.8
+  min_ansible_version: "2.8"
 
   platforms:
-    - name: RHEL
+    - name: "EL"
       versions:
-        - 8
-    - name: CentOS
+        - "7"
+        - "8"
+    - name: "Ubuntu"
       versions:
-        - 7
-    - name: Ubuntu
-      versions:
-        - 22.04
-        - 20.04
-        - 18.04
-        - 16.04
+        - "jammy"
+        - "focal"
+        - "bionic"
+        - "xenial"
 
 
   galaxy_tags:

@@ -1,5 +1,5 @@
 ---
-- name: check if we're running supported os
+- name: Check if we're running supported os
   assert:
     fail_msg: "{{ role_name }} only supports ubuntu versions 16, 18, 20, 22,  centos versions 7 and RHEL 8!"
     success_msg: "{{ role_name }} supports {{ ansible_distribution }} version {{ ansible_distribution_version }}"
@@ -9,25 +9,25 @@
       or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7] )
       or ( ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [8] )
 
-- name: combine custom and global config
+- name: Combine custom and global config
   set_fact:
     postfix_main_cf: '{{ postfix_default_main_cf | combine(postfix_main_cf, recursive=True) }}'
 
-- name: update apt cache on debian/ubuntu
+- name: Update apt cache on debian/ubuntu
   apt:
     update_cache: true
     cache_valid_time: 86400
   when:
     - ansible_distribution == "Ubuntu"
 
-- name: install postfix
+- name: Install postfix
   package:
     name:
       - postfix
       - ca-certificates
       - '{{ "mailx" if ansible_os_family | lower == "redhat" else "bsd-mailx" }}'
 
-- name: update postfix configuration
+- name: Update postfix configuration
   ini_file:
     path: /etc/postfix/main.cf
     section: null
@@ -37,7 +37,7 @@
   loop: '{{ postfix_main_cf | dict2items(key_name="option", value_name="value") }}'
   register: postfix_config
 
-- name: point to valid ca-certificates
+- name: Point to valid ca-certificates
   ini_file:
     path: /etc/postfix/main.cf
     section: null
@@ -58,12 +58,12 @@
     - ansible_distribution_major_version|int == 8
     - ansible_distribution == "RedHat"
 
-- name: check if alias file exits
+- name: Check if alias file exits
   stat:
     path: /etc/aliases
   register: alias_file
 
-- name: update mail aliases
+- name: Update mail aliases
   lineinfile:
     path: /etc/aliases
     regex: '^{{ item.user }}:.*$'
@@ -73,20 +73,20 @@
   register: mail_aliases
   when: alias_file.stat.exists
 
-- name: update new aliases
+- name: Update new aliases
   command: /usr/bin/newaliases
   when:
     - mail_aliases is defined
     - mail_aliases is changed
 
-- name: start and enable postfix
+- name: Start and enable postfix
   service:
     name: postfix
     state: started
     pattern: postfix
     enabled: true
 
-- name: restart postfix
+- name: Restart postfix
   service:
     name: postfix
     state: restarted
