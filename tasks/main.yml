@@ -1,6 +1,6 @@
 ---
 - name: Check if we're running supported os
-  assert:
+  ansible.builtin.assert:
     fail_msg: "{{ role_name }} only supports ubuntu versions 16, 18, 20, 22,  centos versions 7 and RHEL 8!"
     success_msg: "{{ role_name }} supports {{ ansible_distribution }} version {{ ansible_distribution_version }}"
     quiet: "{{ not ansible_check_mode }}"
@@ -10,25 +10,30 @@
       or ( ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [8] )
 
 - name: Combine custom and global config
-  set_fact:
+  ansible.builtin.set_fact:
     postfix_main_cf: '{{ postfix_default_main_cf | combine(postfix_main_cf, recursive=True) }}'
 
 - name: Update apt cache on debian/ubuntu
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 86400
   when:
     - ansible_distribution == "Ubuntu"
 
+## Install postfix
+
 - name: Install postfix
-  package:
+  ansible.builtin.package:
     name:
       - postfix
       - ca-certificates
       - '{{ "mailx" if ansible_os_family | lower == "redhat" else "bsd-mailx" }}'
+    state: present
+
+## Configure postfix
 
 - name: Update postfix configuration
-  ini_file:
+  community.general.ini_file:
     path: /etc/postfix/main.cf
     section: null
     option: '{{ item.option }}'
@@ -38,7 +43,7 @@
   register: postfix_config
 
 - name: Point to valid ca-certificates
-  ini_file:
+  community.general.ini_file:
     path: /etc/postfix/main.cf
     section: null
     option: smtp_tls_CAfile
@@ -47,7 +52,7 @@
   when: postfix_automatic_smt_tls_cafile
 
 - name: RHEL 8 select all for interfaces
-  ini_file:
+  community.general.ini_file:
     path: /etc/postfix/main.cf
     section: null
     option: 'inet_interfaces'
@@ -59,12 +64,12 @@
     - ansible_distribution == "RedHat"
 
 - name: Check if alias file exits
-  stat:
+  ansible.builtin.stat:
     path: /etc/aliases
   register: alias_file
 
 - name: Update mail aliases
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/aliases
     regex: '^{{ item.user }}:.*$'
     line: '{{ item.user }}: {{ item.alias }}'
@@ -74,20 +79,19 @@
   when: alias_file.stat.exists
 
 - name: Update new aliases
-  command: /usr/bin/newaliases
+  ansible.builtin.command: /usr/bin/newaliases
   when:
     - mail_aliases is defined
     - mail_aliases is changed
 
 - name: Start and enable postfix
-  service:
+  ansible.builtin.service:
     name: postfix
     state: started
-    pattern: postfix
     enabled: true
 
 - name: Restart postfix
-  service:
+  ansible.builtin.service:
     name: postfix
     state: restarted
   when: postfix_config is changed
