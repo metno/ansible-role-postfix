@@ -29,6 +29,8 @@
       - ca-certificates
       - '{{ "mailx" if ansible_os_family | lower == "redhat" else "bsd-mailx" }}'
     state: present
+  when:
+    - not ansible_check_mode
 
 ## Configure postfix
 
