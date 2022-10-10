@@ -1,0 +1,12 @@
+---
+- name: update apt cache on debian/ubuntu
+  apt:
+    update_cache: true
+    cache_valid_time: 86400
+  when:
+    - ansible_distribution == "Ubuntu"
+
+- name: install mailx
+  package:
+    name:
+      - bsd-mailx

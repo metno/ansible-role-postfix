@@ -12,12 +12,14 @@ galaxy_info:
   min_ansible_version: 2.8
 
   platforms:
-    - name: RHEL
+    - name: RedHat
       versions:
         - 8
+        - 9
     - name: CentOS
       versions:
         - 7
+        - 8
     - name: Ubuntu
       versions:
         - 22.04
