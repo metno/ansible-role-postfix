@@ -26,6 +26,7 @@ Version
 -------
 
 * `3.0.0` --- update to ansible 2.12.9
+* `2.3.0` --- added RHEL9 and CentOS Stream 8 support.
 * `2.2.0` --- added Ubuntu Jammy(22.04) and removed centos8.
 * `2.1.0` --- removed Ubuntu 14.04 from test. Added RHEL 8 and set inet_interfaces = all for that dist.
 * `2.0.0` --- removed centos6 from test. added update cache for ubuntu. reordered tasks so newaliases are run before postfix start.
@@ -48,7 +49,9 @@ This role is limited to:
 * Ubuntu 20.04
 * Ubuntu 22.04
 * CentOS 7
+* CentOS Stream 8
 * RHEL 8
+* RHEL 9
 
 Role Variables
 --------------
