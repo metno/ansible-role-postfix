@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `3.0.0` --- update to ansible 2.12.9
 * `2.3.0` --- added RHEL9 and CentOS Stream 8 support.
 * `2.2.0` --- added Ubuntu Jammy(22.04) and removed centos8.
 * `2.1.0` --- removed Ubuntu 14.04 from test. Added RHEL 8 and set inet_interfaces = all for that dist.

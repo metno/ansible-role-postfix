@@ -1,6 +1,6 @@
 ---
-- name: check if we're running supported os
-  assert:
+- name: Check if we're running supported os
+  ansible.builtin.assert:
     fail_msg: "{{ role_name }} only supports ubuntu versions 16, 18, 20, 22,   centos versions 7, centos strem versions 8, rhel versions 8, 9!"
     success_msg: "{{ role_name }} supports {{ ansible_distribution }} version {{ ansible_distribution_version }}"
     quiet: "{{ not ansible_check_mode }}"
@@ -9,21 +9,33 @@
       or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7, 8] )
       or ( ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [8, 9] )
 
-- name: combine custom and global config
-  set_fact:
+- name: Combine custom and global config
+  ansible.builtin.set_fact:
     postfix_main_cf: '{{ postfix_default_main_cf | combine(postfix_main_cf, recursive=True) }}'
 
-- name: include os specific config
-  include: '{{ ansible_os_family | lower }}.yml'
+- name: Update apt cache on debian/ubuntu
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 86400
+  when:
+    - ansible_distribution == "Ubuntu"
 
-- name: install postfix
-  package:
+## Install postfix
+
+- name: Install postfix
+  ansible.builtin.package:
     name:
       - postfix
       - ca-certificates
+      - '{{ "mailx" if ansible_os_family | lower == "redhat" else "bsd-mailx" }}'
+    state: present
+  when:
+    - not ansible_check_mode
 
-- name: update postfix configuration
-  ini_file:
+## Configure postfix
+
+- name: Update postfix configuration
+  community.general.ini_file:
     path: /etc/postfix/main.cf
     section: null
     option: '{{ item.option }}'
@@ -32,8 +44,8 @@
   loop: '{{ postfix_main_cf | dict2items(key_name="option", value_name="value") }}'
   register: postfix_config
 
-- name: point to valid ca-certificates
-  ini_file:
+- name: Point to valid ca-certificates
+  community.general.ini_file:
     path: /etc/postfix/main.cf
     section: null
     option: smtp_tls_CAfile
@@ -42,7 +54,7 @@
   when: postfix_automatic_smt_tls_cafile
 
 - name: RHEL 8 select all for interfaces
-  ini_file:
+  community.general.ini_file:
     path: /etc/postfix/main.cf
     section: null
     option: 'inet_interfaces'
@@ -53,13 +65,13 @@
     - ansible_distribution_major_version|int > 7
     - ansible_distribution == "RedHat"
 
-- name: check if alias file exits
-  stat:
+- name: Check if alias file exits
+  ansible.builtin.stat:
     path: /etc/aliases
   register: alias_file
 
-- name: update mail aliases
-  lineinfile:
+- name: Update mail aliases
+  ansible.builtin.lineinfile:
     path: /etc/aliases
     regex: '^{{ item.user }}:.*$'
     line: '{{ item.user }}: {{ item.alias }}'
@@ -68,21 +80,20 @@
   register: mail_aliases
   when: alias_file.stat.exists
 
-- name: update new aliases
-  command: /usr/bin/newaliases
+- name: Update new aliases
+  ansible.builtin.command: /usr/bin/newaliases
   when:
     - mail_aliases is defined
     - mail_aliases is changed
 
-- name: start and enable postfix
-  service:
+- name: Start and enable postfix
+  ansible.builtin.service:
     name: postfix
     state: started
-    pattern: postfix
     enabled: true
 
-- name: restart postfix
-  service:
+- name: Restart postfix
+  ansible.builtin.service:
     name: postfix
     state: restarted
   when: postfix_config is changed
