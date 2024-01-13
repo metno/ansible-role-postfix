@@ -27,8 +27,8 @@
     name:
       - postfix
       - ca-certificates
-      - '{{ "mailx"  if ansible_os_family | lower == "redhat" and ansible_distribution_version|int in [7, 8] else
-            "s-nail" if ansible_os_family | lower == "redhat" and ansible_distribution_version|int in [9] else
+      - '{{ "mailx" if ansible_os_family | lower == "redhat" and ansible_distribution_version | int in [7, 8] else
+            "s-nail" if ansible_os_family | lower == "redhat" and ansible_distribution_version | int in [9] else
             "bsd-mailx" }}'
     state: present
   when:
@@ -42,7 +42,7 @@
     section: null
     option: '{{ item.option }}'
     value: '{{ item.value | string }}'
-    mode: 0644
+    mode: "0644"
   loop: '{{ postfix_main_cf | dict2items(key_name="option", value_name="value") }}'
   register: postfix_config
 
@@ -52,7 +52,7 @@
     section: null
     option: smtp_tls_CAfile
     value: '{{ "/etc/ssl/certs/ca-bundle.crt" if ansible_os_family | lower == "redhat" else "/etc/ssl/certs/ca-certificates.crt" }}'
-    mode: 0644
+    mode: "0644"
   when: postfix_automatic_smt_tls_cafile
 
 - name: RHEL 8 select all for interfaces
@@ -61,7 +61,7 @@
     section: null
     option: 'inet_interfaces'
     value: "all"
-    mode: 0644
+    mode: "0644"
   register: postfix_config
   when:
     - ansible_distribution_major_version|int > 7
@@ -82,7 +82,7 @@
   register: mail_aliases
   when: alias_file.stat.exists
 
-- name: Update new aliases
+- name: Update new aliases # noqa no-changed-when
   ansible.builtin.command: /usr/bin/newaliases
   when:
     - mail_aliases is defined
