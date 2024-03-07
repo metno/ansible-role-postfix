@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `3.1.0` --- added ubuntu 24.04 noble support
 * `3.0.0` --- update to ansible 2.12.9
 * `2.3.0` --- added RHEL9 and CentOS Stream 8 support.
 * `2.2.0` --- added Ubuntu Jammy(22.04) and removed centos8.
@@ -48,6 +49,7 @@ This role is limited to:
 * Ubuntu 18.04
 * Ubuntu 20.04
 * Ubuntu 22.04
+* Ubuntu 24.04
 * CentOS 7
 * CentOS Stream 8
 * RHEL 8
