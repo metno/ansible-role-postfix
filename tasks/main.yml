@@ -1,11 +1,11 @@
 ---
 - name: Check if we're running supported os
   ansible.builtin.assert:
-    fail_msg: "{{ role_name }} only supports ubuntu versions 16, 18, 20, 22,   centos versions 7, centos strem versions 8, rhel versions 8, 9!"
+    fail_msg: "{{ role_name }} only supports ubuntu versions 16, 18, 20, 22, 24  centos versions 7, centos stream versions 8, rhel versions 8, 9!"
     success_msg: "{{ role_name }} supports {{ ansible_distribution }} version {{ ansible_distribution_version }}"
     quiet: "{{ not ansible_check_mode }}"
     that:
-      ( ansible_distribution == "Ubuntu" and ansible_distribution_version|int in [16, 18, 20, 22] )
+      ( ansible_distribution == "Ubuntu" and ansible_distribution_version|int in [16, 18, 20, 22, 24] )
       or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7, 8] )
       or ( ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [8, 9] )
 
@@ -27,7 +27,7 @@
     name:
       - postfix
       - ca-certificates
-      - '{{ "mailx" if ansible_os_family | lower == "redhat" else "bsd-mailx" }}'
+      - '{{ "s-nail" if ansible_os_family | lower == "redhat" and ansible_distribution_version | int == 9 else ("mailx" if ansible_os_family | lower == "redhat" else "bsd-mailx") }}' # noqa: yaml[line-length]
     state: present
   when:
     - not ansible_check_mode
@@ -40,7 +40,7 @@
     section: null
     option: '{{ item.option }}'
     value: '{{ item.value | string }}'
-    mode: 0644
+    mode: "0644"
   loop: '{{ postfix_main_cf | dict2items(key_name="option", value_name="value") }}'
   register: postfix_config
 
@@ -50,7 +50,7 @@
     section: null
     option: smtp_tls_CAfile
     value: '{{ "/etc/ssl/certs/ca-bundle.crt" if ansible_os_family | lower == "redhat" else "/etc/ssl/certs/ca-certificates.crt" }}'
-    mode: 0644
+    mode: "0644"
   when: postfix_automatic_smt_tls_cafile
 
 - name: RHEL 8 select all for interfaces
@@ -59,11 +59,11 @@
     section: null
     option: 'inet_interfaces'
     value: "all"
-    mode: 0644
+    mode: "0644"
   register: postfix_config
   when:
-    - ansible_distribution_major_version|int > 7
-    - ansible_distribution == "RedHat"
+    - ( ansible_distribution_major_version|int > 7 and ansible_distribution == "RedHat" ) or
+      ( ansible_distribution_major_version|int == 8 and ansible_distribution == "CentOS" )
 
 - name: Check if alias file exits
   ansible.builtin.stat:
@@ -80,7 +80,7 @@
   register: mail_aliases
   when: alias_file.stat.exists
 
-- name: Update new aliases
+- name: Update new aliases # noqa no-changed-when
   ansible.builtin.command: /usr/bin/newaliases
   when:
     - mail_aliases is defined
@@ -91,9 +91,12 @@
     name: postfix
     state: started
     enabled: true
+  when: not ansible_check_mode
 
 - name: Restart postfix
   ansible.builtin.service:
     name: postfix
     state: restarted
-  when: postfix_config is changed
+  when:
+    - postfix_config is changed
+    - not ansible_check_mode

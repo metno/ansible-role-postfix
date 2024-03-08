@@ -3,7 +3,7 @@ postfix
 
 Configure `postfix` to send mail via a relay client.
 
-Installs both `postfix` and `bsd-mailx`/`mailx` packages. Default postfix configuration in `/etc/postfix/main.cf` as below. Override values in `postfix_main_cf`.
+Installs both `postfix` and `bsd-mailx`/`mailx`/`s-nail` packages. Default postfix configuration in `/etc/postfix/main.cf` as below. Override values in `postfix_main_cf`.
 
 ```ini
 append_dot_mydomain = no
@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `3.1.0` --- added ubuntu 24.04 noble support
 * `3.0.0` --- update to ansible 2.12.9
 * `2.3.0` --- added RHEL9 and CentOS Stream 8 support.
 * `2.2.0` --- added Ubuntu Jammy(22.04) and removed centos8.
@@ -48,6 +49,7 @@ This role is limited to:
 * Ubuntu 18.04
 * Ubuntu 20.04
 * Ubuntu 22.04
+* Ubuntu 24.04
 * CentOS 7
 * CentOS Stream 8
 * RHEL 8

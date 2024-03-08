@@ -1,9 +1,10 @@
 ---
-- hosts: all
+- name: Test playbook
+  hosts: all
   remote_user: root
   become: true
   roles:
-    - role: ../../.
+    - role: ../../. # noqa role-name[path]
       vars:
         postfix_main_cf:
           mydomain: foo.bar
