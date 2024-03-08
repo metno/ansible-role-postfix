@@ -35,7 +35,7 @@
 ## Configure postfix
 
 - name: Update postfix configuration
-  community.general.ini_file: # noqa syntax-check[specific]
+  community.general.ini_file: # noqa: syntax-check[specific]
     path: /etc/postfix/main.cf
     section: null
     option: '{{ item.option }}'
