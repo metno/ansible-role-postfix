@@ -1,5 +1,5 @@
 ---
-- name: Test playbook
+- name: Test postfix
   hosts: all
   remote_user: root
   become: true
