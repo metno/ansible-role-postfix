@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 - name: Test postfix
   hosts: all
   remote_user: root
