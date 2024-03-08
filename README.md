@@ -3,7 +3,7 @@ postfix
 
 Configure `postfix` to send mail via a relay client.
 
-Installs both `postfix` and `bsd-mailx`/`mailx` packages. Default postfix configuration in `/etc/postfix/main.cf` as below. Override values in `postfix_main_cf`.
+Installs both `postfix` and `bsd-mailx`/`mailx`/`s-nail` packages. Default postfix configuration in `/etc/postfix/main.cf` as below. Override values in `postfix_main_cf`.
 
 ```ini
 append_dot_mydomain = no
