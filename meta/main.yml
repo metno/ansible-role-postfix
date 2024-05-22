@@ -1,7 +1,7 @@
 # vim: ai et ts=2 st=2 sw=2 :
 ---
 galaxy_info:
-  author: "Arnulf Heimsbakk <aheimsbakk@met.no>"
+  author: IT Infrastructure at MET Norway
   description: "Configure postfix"
   company: "MET Norway"
   role_name: "postfix"
@@ -9,7 +9,7 @@ galaxy_info:
 
   license: "GPLv2"
 
-  min_ansible_version: "2.12"
+  min_ansible_version: "2.16"
 
   platforms:
     - name: "EL"

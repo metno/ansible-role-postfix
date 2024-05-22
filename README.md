@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `4.0.0` --- Updated for ansible-core 2.16. Removed support for Ubuntu Bionic and Ubuntu Xenial.
 * `3.1.0` --- added ubuntu 24.04 noble support
 * `3.0.0` --- update to ansible 2.12.9
 * `2.3.0` --- added RHEL9 and CentOS Stream 8 support.
@@ -45,8 +46,6 @@ Requirements
 
 This role is limited to:
 
-* Ubuntu 16.04
-* Ubuntu 18.04
 * Ubuntu 20.04
 * Ubuntu 22.04
 * Ubuntu 24.04
@@ -112,6 +111,8 @@ GPLv2
 Author Information
 ------------------
 
-Arnulf Heimsbakk <aheimsbakk@met.no>
+Created by IT Infrastructure at MET Norway
+
+Contactpoint: [IT Infrastructure Basis Team](mailto:it-is-basis@met.no)
 
 ###### set vim: spell spelllang=en:
