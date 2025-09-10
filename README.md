@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `4.0.1` --- Changed testing to Ansible Molecule
 * `4.0.0` --- Updated for ansible-core 2.16. Removed support for Ubuntu Bionic and Ubuntu Xenial.
 * `3.1.0` --- added ubuntu 24.04 noble support
 * `3.0.0` --- update to ansible 2.12.9
@@ -84,24 +85,27 @@ Variables are kept in the `host_vars` or `group_vars` folder usually. Defining e
 Testing
 -------
 
-To test RHEL8 with vagrant, install `vagrant-register`
+Testing is done using Ansible Molecule. It uses Vagrant with libvirt as backend.
+
+To run full test run:
 
 ```bash
-vagrant plugin install vagrant-registration
+molecule test
 ```
 
-Testing the role with Vagrant running on VirtualBox.
+To run test step by step run:
 
-    cd tests
-    vagrant up
+```bash
+molecule create
+molecule converge
+molecule verify
+molecule destroy
+```
 
-Rerun tests.
-
-    vagrant provision
-
-Remove test VMs.
-
-    vagrant destroy -f
+To run toward specific scenario use `-s` option.
+```
+molecule test -s ubuntu
+```
 
 License
 -------
