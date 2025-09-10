@@ -1,0 +1,5 @@
+---
+postfix_main_cf:
+  mydomain: foo.bar
+postfix_aliases:
+  root: linux@foo.bar
