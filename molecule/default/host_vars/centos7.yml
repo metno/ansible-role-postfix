@@ -1,0 +1,2 @@
+postfix_main_cf:
+  inet_interfaces: 127.0.0.1

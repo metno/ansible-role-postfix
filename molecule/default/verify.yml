@@ -1,0 +1,114 @@
+- name: Verify
+  become: true
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Assert that postfix is installed
+      ansible.builtin.assert:
+        that: "'postfix' in ansible_facts.packages"
+        fail_msg: "The package 'postfix' is NOT installed!"
+        success_msg: "The package 'postfix' is installed."
+
+    - name: Check if the file exists
+      ansible.builtin.stat:
+        path: "/etc/postfix/main.cf"
+      register: postfix_config
+
+    - name: Assert the file exists
+      ansible.builtin.assert:
+        that:
+          - postfix_config.stat.exists
+        fail_msg: "The file /etc/postfix/main.cf does not exist!"
+        success_msg: "The file /etc/postfix/main.cf exists as expected."
+
+    - name: Check if the file exists
+      ansible.builtin.stat:
+        path: "/etc/aliases"
+      register: aliases
+
+    - name: Assert the file exists
+      ansible.builtin.assert:
+        that:
+          - aliases.stat.exists
+        fail_msg: "The file /etc/aliases does not exist!"
+        success_msg: "The file /etc/aliases exists as expected."
+
+    - name: Read the file content of /etc/postfix/main.cf
+      slurp:
+        path: /etc/postfix/main.cf
+      register: postfix_config_file
+
+    - name: Assert that /etc/postfix/main.cf contains our changes
+      assert:
+        that:
+          - "item in (postfix_config_file.content | b64decode)"
+        fail_msg: "{{ item }} does not exist in config"
+        success_msg: "{{ item }} exists in config"
+      loop: >
+        {{
+          [
+            'append_dot_mydomain = no',
+            'biff = no',
+            "mydestination = ${myhostname} localhost.${mydomain} localhost",
+            "mydomain = {{ ansible_domain }}",
+            "myhostname = {{ ansible_fqdn }}",
+            'mynetworks_style = host',
+            "myorigin = ${myhostname}",
+            "relaydomain = ${mydomain}",
+            'relayhost = aspmx.l.google.com',
+            'smtp_enforce_tls = yes',
+            'smtp_sasl_auth_enable = no',
+            'smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache',
+            'tls_append_default_CA = yes'
+          ] + (
+            [
+              'inet_interfaces = 127.0.0.1'
+            ] if inventory_hostname in ['centos7', 'focal'] else (
+              [
+                'inet_interfaces = all'
+              ] if inventory_hostname == 'centos8-stream' or 'rocky' in group_names else [
+                'inet_interfaces = 127.0.0.1, [::1]'
+              ]
+            )
+          )
+        }}
+
+    - name: Read the file content of /etc/aliases
+      slurp:
+        path: /etc/aliases
+      register: aliases_config_file
+
+    - name: Assert that /etc/aliases contains our changes
+      assert:
+        that:
+          - "item in (aliases_config_file.content | b64decode)"
+        fail_msg: "{{ item }} does not exist in config"
+        success_msg: "{{ item }} exists in config"
+      loop:
+        - 'root: linux@foo.bar'
+
+    - name: Check the state of the chrony service
+      ansible.builtin.service:
+        name: "{{ postfix_service }}"
+        state: started
+        enabled: yes
+      register: postfix_service_status
+      changed_when: false
+      failed_when: false
+      vars:
+        postfix_service: postfix
+
+    - name: Assert that the chrony service is both enabled and running
+      ansible.builtin.assert:
+        that:
+          - postfix_service_status.state == "started"
+          - postfix_service_status.enabled
+        fail_msg: "The service {{ postfix_service }} is either not running or not enabled."
+        success_msg: "The service {{ postfix_service }} is running and enabled."
+      vars:
+        postfix_service: postfix
