@@ -7,7 +7,7 @@
     that:
       ( ansible_distribution == "Ubuntu" and ansible_distribution_version|int in [20, 22, 24] )
       or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7] )
-      or ( ansible_os_family == "RedHat" and ansible_distribution_major_version|int in [8, 9] )
+      or ( ansible_os_family == "RedHat" and ansible_distribution_major_version|int in [8, 9, 10] )
 
 - name: Combine custom and global config
   ansible.builtin.set_fact:
@@ -34,6 +34,13 @@
 
 ## Configure postfix
 
+- name: Set interface for RHEL
+  ansible.builtin.set_fact:
+    postfix_main_cf: "{{ postfix_main_cf | combine({'inet_interfaces': 'all'}) }}"
+  when:
+    - ansible_distribution_major_version|int > 7 and ansible_os_family == "RedHat"
+    - not ( ansible_distribution_major_version|int == 7 and ansible_distribution == "CentOS" )
+
 - name: Update postfix configuration
   community.general.ini_file:
     path: /etc/postfix/main.cf
@@ -52,18 +59,6 @@
     value: '{{ "/etc/ssl/certs/ca-bundle.crt" if ansible_os_family | lower == "redhat" else "/etc/ssl/certs/ca-certificates.crt" }}'
     mode: "0644"
   when: postfix_automatic_smt_tls_cafile
-
-- name: RHEL 8 select all for interfaces
-  community.general.ini_file:
-    path: /etc/postfix/main.cf
-    section: null
-    option: 'inet_interfaces'
-    value: "all"
-    mode: "0644"
-  register: postfix_config
-  when:
-    - ansible_distribution_major_version|int > 7 and ansible_os_family == "RedHat"
-    - not ( ansible_distribution_major_version|int == 7 and ansible_distribution == "CentOS" )
 
 - name: Check if alias file exits
   ansible.builtin.stat:

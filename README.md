@@ -25,6 +25,7 @@ tls_append_default_CA = yes
 Version
 -------
 
+* `4.1.0` --- Added support for RHEL10. The role now supports os_family = redhat.
 * `4.0.1` --- Changed testing to Ansible Molecule
 * `4.0.0` --- Updated for ansible-core 2.16. Removed support for Ubuntu Bionic and Ubuntu Xenial.
 * `3.1.0` --- added ubuntu 24.04 noble support
@@ -45,15 +46,12 @@ Version
 Requirements
 ------------
 
-This role is limited to:
+This role supports
 
-* Ubuntu 20.04
-* Ubuntu 22.04
-* Ubuntu 24.04
+* RedHat Based OS, version 8,9,10
+* Ubuntu 20.04, 22.04, and 24.04
 * CentOS 7
 * CentOS Stream 8
-* RHEL 8
-* RHEL 9
 
 Role Variables
 --------------
