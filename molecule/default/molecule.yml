@@ -8,7 +8,7 @@ driver:
   default_box: 'metno/ubuntu-22.04'
 
 platforms:
-  - name: chrony-noble
+  - name: postfix-noble
     box: metno/ubuntu-24.04
     box_url: https://vagrant.met.no/meta/ubuntu-24.04.json
     memory: 2048
@@ -19,7 +19,7 @@ platforms:
       qemu_use_session: true
     groups:
       - ubuntu
-  - name: chrony-jammy
+  - name: postfix-jammy
     box: metno/ubuntu-22.04
     box_url: https://vagrant.met.no/meta/ubuntu-22.04.json
     memory: 2048
@@ -30,7 +30,7 @@ platforms:
       qemu_use_session: true
     groups:
       - ubuntu
-  - name: chrony-focal
+  - name: postfix-focal
     box: metno/ubuntu-20.04
     box_url: https://vagrant.met.no/eol/ubuntu-20.04.json
     memory: 2048
@@ -41,7 +41,8 @@ platforms:
       qemu_use_session: true
     groups:
       - ubuntu
-  - name: chrony-rocky8
+      - no_ipv6
+  - name: postfix-rocky8
     box: metno/rockylinux-8
     box_url: https://vagrant.met.no/meta/rockylinux-8.json
     memory: 2048
@@ -52,7 +53,7 @@ platforms:
       qemu_use_session: true
     groups:
       - rocky
-  - name: chrony-rocky9
+  - name: postfix-rocky9
     box: metno/rockylinux-9
     box_url: https://vagrant.met.no/meta/rockylinux-9.json
     memory: 2048
@@ -63,7 +64,7 @@ platforms:
       qemu_use_session: true
     groups:
       - rocky
-  - name: chrony-rocky10
+  - name: postfix-rocky10
     box: metno/rockylinux-10
     box_url: https://vagrant.met.no/meta/rockylinux-10.json
     memory: 2048
@@ -74,7 +75,7 @@ platforms:
       qemu_use_session: true
     groups:
       - rocky
-  - name: chrony-centos7
+  - name: postfix-centos7
     box: metno/centos-7
     box_url: https://vagrant.met.no/eol/centos-7.json
     memory: 2048
@@ -85,7 +86,8 @@ platforms:
       qemu_use_session: true
     groups:
       - centos
-  - name: chrony-centos8-stream
+      - no_ipv6
+  - name: postfix-centos8-stream
     box: metno/centosstream-8
     box_url: https://vagrant.met.no/eol/centosstream-8.json
     memory: 2048
